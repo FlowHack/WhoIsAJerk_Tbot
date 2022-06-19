@@ -1,0 +1,2 @@
+class BotNotAdmin(Exception):
+    pass
