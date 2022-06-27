@@ -1,0 +1,7 @@
+venv/
+.gitignore
+setup.cfg
+Dockerfile
+docker-compose.yaml
+*/__pycache__/*
+.vscode

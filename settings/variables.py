@@ -1,7 +1,7 @@
 from datetime import timezone
 from os import environ
 
-DEBUG = bool(environ.get('DEBAG')) or True
+DEBUG = False if environ.get('DEBUG') == '0' else True
 API_TOKEN = environ.get('TG_API_TOKEN_DEBUG') if DEBUG  \
     else environ.get('TG_API_TOKEN')
 DB_HOST = environ.get('DB_HOST')

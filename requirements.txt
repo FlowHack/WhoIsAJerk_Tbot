@@ -17,4 +17,5 @@ pyflakes==2.4.0
 pytz==2022.1
 scheduler==0.7.4
 typeguard==2.13.3
+ujson==5.3.0
 yarl==1.7.2
