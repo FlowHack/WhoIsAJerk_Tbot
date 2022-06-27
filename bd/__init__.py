@@ -1,7 +1,9 @@
 from .main import BaseData
 from .requests import REQUESTS
+from .requests import BaseDataRequests
 
-__all__ =[
+__all__ = [
     'BaseData',
-    'REQUESTS'
+    'REQUESTS',
+    'BaseDataRequests',
 ]
