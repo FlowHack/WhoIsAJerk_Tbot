@@ -26,7 +26,8 @@ class BaseDataRequests(BaseData):
             result = self.cursor.fetchone()
             return True if result is not None else False
         if count:
-            return len(self.cursor.fetchone())
+            result = self.cursor.fetchone()
+            return 0 if result is None else len(result)
 
         columns = self.tables[table] if select_str == '*' else select
         if not many:
@@ -81,7 +82,7 @@ VALUES('{mention}', {user_id}, {group_id}, {summ_ball}, '{last_appeal_to_rank}',
 
         variables = []
         if timezone is not None:
-            variables.append(f'timezone="{timezone}"')
+            variables.append(f"timezone='{timezone}'")
         if week_gondon is not None:
             variables.append(f'week_gondon={week_gondon}')
 
@@ -106,13 +107,13 @@ VALUES('{mention}', {user_id}, {group_id}, {summ_ball}, '{last_appeal_to_rank}',
 
         variables = []
         if mention is not None:
-            variables.append(f'mention="{mention}"')
+            variables.append(f"mention='{mention}'")
         if summ_ball is not None:
             variables.append(f'summ_ball={summ_ball}')
         if last_appeal_to_rank is not None:
-            variables.append(f'last_appeal_to_rank="{last_appeal_to_rank}"')
+            variables.append(f"last_appeal_to_rank='{last_appeal_to_rank}'")
         if rank is not None:
-            variables.append(f'rank="{rank}"')
+            variables.append(f"rank='{rank}'")
 
         length_vars = len(variables)
         if length_vars > 1:
