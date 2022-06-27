@@ -65,16 +65,6 @@ async def start(message: types.Message):
     )
 
 
-@dp.message_handler(commands='secret')
-async def secret(message: types.Message):
-    plus_count_request(db_requests)
-    await message.answer(
-        db_requests.get(
-            'frazes', ['text_fraze'], 'action="secret"'
-        )
-    )
-
-
 async def set_timezone(message: types.Message, user: types.User):
     plus_count_request(db_requests)
     admins = await check_bot_admin(
@@ -282,10 +272,15 @@ async def help(message: types.Message):
     )
 
 
-@dp.message_handler(commands='admin_panel')
-async def admin_panel(message: types.Message):
-    await set_default_commands(dp)
+@dp.message_handler(commands='secret')
+async def secret(message: types.Message):
     if message.chat.id not in [ADMIN_ID, ADMIN_GROUP_ID]:
+        plus_count_request(db_requests)
+        await message.answer(
+            db_requests.get(
+                'frazes', ['text_fraze'], 'action="secret"'
+            )
+        )
         return
 
     await message.answer(
@@ -489,10 +484,14 @@ async def admin_show_stats(callback_query: types.CallbackQuery):
     requests_today = db_requests.get(
         'stat_requests', ['requests'], f'date={now_date}'
     )
+    requests_today = 0 if requests_today is None else requests_today
 
     await callback_query.message.answer(
-        f'Статистика:\n\nКоличесво пользователей: {users_count}\n'
-        f'Количество зарегестрированных групп: {groups_count}'
+        '<i><b>Статистика:</b></i>\n'
+        f'Количесво пользователей: {users_count}\n'
+        f'Количество зарегестрированных групп: {groups_count}\n'
+        f'Количество запросов за сегодня: {requests_today}',
+        reply_markup=KEYBOARDS['admin_panel']
     )
 
 
