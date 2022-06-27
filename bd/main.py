@@ -20,7 +20,7 @@ class BaseData:
             'frazes': ['id', 'action', 'text_fraze'],
             'stat_requests': ['id', 'date', 'requests']
         }
-        self.connect = db_connect_debug('bd.sqlite') if DEBUG else db_connect(
+        self.connect = db_connect(
             host=DB_HOST, user=DB_USER, password=DB_PASSWORD,
             dbname=DB_NAME, port=DB_PORT
         )

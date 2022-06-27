@@ -10,7 +10,7 @@ services:
     env_file:
       - .env
   web:
-    build: .
+    image: flowhack/whoisjerk_tbot
     restart: always
     depends_on:
       - db

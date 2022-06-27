@@ -75,14 +75,14 @@ async def check_group(message: types.Message, db, return_group: bool = False,
             if fraze_none is not None:
                 await message.answer(
                     db.get(
-                        'frazes', ['text_fraze'], f'action="{fraze_none}"'
+                        'frazes', ['text_fraze'], f"action='{fraze_none}'"
                     ), reply_markup=keyboard_none
                 )
             return {'result': False, 'group': group}
         if fraze_exist is not None:
             await message.answer(
                 db.get(
-                    'frazes', ['text_fraze'], f'action="{fraze_exist}"'
+                    'frazes', ['text_fraze'], f"action='{fraze_exist}'"
                 ), reply_markup=keyboard_exist
             )
         return {'result': True, 'group': group}
@@ -90,13 +90,13 @@ async def check_group(message: types.Message, db, return_group: bool = False,
     if group and fraze_exist is not None:
         await message.answer(
             db.get(
-                'frazes', ['text_fraze'], f'action="{fraze_exist}"'
+                'frazes', ['text_fraze'], f"action='{fraze_exist}'"
             ), reply_markup=keyboard_exist
         )
     if not group and fraze_none is not None:
         await message.answer(
             db.get(
-                'frazes', ['text_fraze'], f'action="{fraze_none}"'
+                'frazes', ['text_fraze'], f"action='{fraze_none}'"
             ), reply_markup=keyboard_none
         )
 
@@ -133,7 +133,7 @@ async def check_bot_admin(bot_api: Bot, message: types.Message,
             fraze = 'bot_not_admin' if user_admin  \
                 else 'bot_not_admin_and_user_to'
             text = db_requests.get(
-                'frazes', ['text_fraze'], f'action="{fraze}"'
+                'frazes', ['text_fraze'], f"action='{fraze}'"
             )
             result = {'bot': False, 'user': user_admin} if return_user_admin  \
                 else False
@@ -141,7 +141,7 @@ async def check_bot_admin(bot_api: Bot, message: types.Message,
             fraze = 'bot_not_admin' if user_admin['admin']  \
                 else 'bot_not_admin_and_user_to'
             text = db_requests.get(
-                'frazes', ['text_fraze'], f'action="{fraze}"'
+                'frazes', ['text_fraze'], f"action='{fraze}'"
             )
             result = {
                 'bot': False,
@@ -202,6 +202,7 @@ def get_now_date(timezone: str) -> dt.datetime.date:
     Returns:
         dt.datetime.date: Дата
     """
+
     return dt.datetime.now(tz=pytz_timezone(timezone)).date()
 
 
@@ -225,14 +226,14 @@ def get_difference_day(date: str, timezone: str):
 def plus_count_request(db) -> None:
     date = get_now_date('UTC')
 
-    if db.get('stat_requests', where=f'date={date}', exists=True):
-        requests = int(db.get('stat_requests', ['requests'], f'date={date}'))
+    if db.get('stat_requests', where=f"date='{date}'", exists=True):
+        requests = int(db.get('stat_requests', ['requests'], f"date='{date}'"))
         requests += 1
         db.update_stat_requests(date, requests)
         return
 
     request = f'''
 INSERT INTO stat_requests(date, requests) VALUES
-({date}, 1)
+('{date}', 1)
 '''
     db.post_request(request)

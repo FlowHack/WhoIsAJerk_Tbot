@@ -40,12 +40,12 @@ async def new_members_handler(message: types.Message):
 
     if new_member.id == int(BOT_ID):
         await message.answer(
-            db_requests.get('frazes', ['text_fraze'], 'action="secret"')
+            db_requests.get('frazes', ['text_fraze'], "action='secret'")
         )
         return
 
     await message.answer(
-        db_requests.get('frazes', ['text_fraze'], action='"new_member"')
+        db_requests.get('frazes', ['text_fraze'], "action='new_member'")
     )
 
 
@@ -57,7 +57,7 @@ async def start(message: types.Message):
     )
     fraze = 'start_again' if exists else 'start'
     text = db_requests.get(
-        'frazes', ['text_fraze'], f'action="{fraze}"'
+        'frazes', ['text_fraze'], f"action='{fraze}'"
     )
 
     await message.answer(
@@ -76,7 +76,7 @@ async def set_timezone(message: types.Message, user: types.User):
     if not admins['user']:
         await message.answer(
             db_requests.get(
-                'frazes', ['text_fraze'], 'action="set_timezone_not_admin"'
+                'frazes', ['text_fraze'], "action='set_timezone_not_admin'"
             )
         )
         return
@@ -116,7 +116,7 @@ async def set_timezone_btn(callback_query: types.CallbackQuery):
     )
     if not group:
         text = db_requests.get(
-            'frazes', ['text_fraze'], 'action="set_timezone_done"'
+            'frazes', ['text_fraze'], "action='set_timezone_done'"
         ).format(timezone=timezone)
         db_requests.insert_group(group_id, timezone)
     else:
@@ -132,11 +132,11 @@ async def set_timezone_btn(callback_query: types.CallbackQuery):
             )
         )
         text = db_requests.get(
-            'frazes', ['text_fraze'], 'action="set_timezone_done_again"'
+            'frazes', ['text_fraze'], "action='set_timezone_done_again'"
         ).format(timezone=timezone, players=players)  \
             if players is not None else db_requests.get(
                 'frazes', ['text_fraze'],
-                'action="set_timezone_done_again_none_players"'
+                "action='set_timezone_done_again_none_players'"
         ).format(timezone=timezone)
 
     await bot_api.delete_message(group_id, message_id)
@@ -162,7 +162,7 @@ async def join_game(message: types.Message, user: types.User):
     if user_exists:
         await message.answer(
             db_requests.get(
-                'frazes', ['text_fraze'], 'action="join_game_again"'
+                'frazes', ['text_fraze'], "action='join_game_again'"
             )
         )
         return
@@ -179,7 +179,7 @@ async def join_game(message: types.Message, user: types.User):
     )
     await message.answer(
         db_requests.get(
-            'frazes', ['text_fraze'], 'action="join_game"'
+            'frazes', ['text_fraze'], "action='join_game'"
         ).format(
             mention=user.mention, rank=rank['rank'], ball=ball, id=user.id
         )
@@ -215,7 +215,7 @@ async def rank(message: types.Message):
     if not user_exists:
         await message.answer(
             db_requests.get(
-                'frazes', ['text_fraze'], 'action="member_not_in_game"'
+                'frazes', ['text_fraze'], "action='member_not_in_game'"
             )
         )
         return
@@ -244,7 +244,7 @@ async def rank(message: types.Message):
         if rank is None:
             message.answer(
                 db_requests.get(
-                    'frazes', ['text_fraze'], 'action="ooops"'
+                    'frazes', ['text_fraze'], "action='ooops'"
                 )
             )
             return
@@ -254,7 +254,7 @@ async def rank(message: types.Message):
 
     await message.answer(
         db_requests.get(
-            'frazes', ['text_fraze'], 'action="rank"'
+            'frazes', ['text_fraze'], "action='rank'"
         ).format(
             id=user_id, mention=message.from_user.mention, rank=rank['rank'],
             ball=ball
@@ -267,7 +267,7 @@ async def help(message: types.Message):
     plus_count_request(db_requests)
     await message.answer(
         db_requests.get(
-            'frazes', ['text_fraze'], 'action="help"'
+            'frazes', ['text_fraze'], "action='help'"
         )
     )
 
@@ -278,7 +278,7 @@ async def secret(message: types.Message):
         plus_count_request(db_requests)
         await message.answer(
             db_requests.get(
-                'frazes', ['text_fraze'], 'action="secret"'
+                'frazes', ['text_fraze'], "action='secret'"
             )
         )
         return
@@ -315,7 +315,7 @@ async def admin_sql_ranks(callback_query: types.CallbackQuery):
     sql = ['INSERT INTO ranks(rank, ball) VALUES']
 
     for i in range(length_ranks):
-        text = f'("{ranks[i]["rank"]}", {ranks[i]["ball"]})'
+        text = f"('{ranks[i]['rank']}', {ranks[i]['ball']})"
         text += ',' if (i + 1) < length_ranks else ';'
         sql.append(text)
     sql = '\n'.join(sql)
@@ -376,7 +376,7 @@ async def admin_add_rangs_query(message: types.Message):
             )
             return
 
-        text = f'("{rank}", {ball})'
+        text = f"('{rank}', {ball})"
         text += ',' if (i + 1) < length_rangs else ';'
         sql.append(text)
         data.append({'rank': rank, 'ball': ball})
@@ -458,8 +458,8 @@ async def admin_edit_rang_query(message: types.Message):
     data = dumps(data, ensure_ascii=False, indent=4)
     sql = f'''
 UPDATE ranks SET
-ball={ball}
-rank="{rank}"
+ball={ball},
+rank='{rank}'
 WHERE id={id}
 '''
     db_requests.post_request(sql)
@@ -482,7 +482,7 @@ async def admin_show_stats(callback_query: types.CallbackQuery):
     groups_count = db_requests.get('groups', count=True)
     now_date = get_now_date('UTC')
     requests_today = db_requests.get(
-        'stat_requests', ['requests'], f'date={now_date}'
+        'stat_requests', ['requests'], f"date='{now_date}'"
     )
     requests_today = 0 if requests_today is None else requests_today
 

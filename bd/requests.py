@@ -1,5 +1,7 @@
+import psycopg2
 from .main import BaseData
 from .sql import REQUESTS
+from psycopg2.errors import InFailedSqlTransaction
 
 
 class BaseDataRequests(BaseData):
@@ -53,19 +55,25 @@ class BaseDataRequests(BaseData):
         week_gondon = 'null' if week_gondon is None else week_gondon
         request = f'''
 INSERT INTO groups(id_group, timezone, week_gondon)
-VALUES({id_group}, "{timezone}", {week_gondon});
+VALUES({id_group}, '{timezone}', {week_gondon});
 '''
         self.cursor.execute(request)
-        self.connect.commit()
+        try:
+            self.connect.commit()
+        except InFailedSqlTransaction:
+            self.connect.rollback()
 
     def insert_user(self, mention: str, user_id: int, group_id: int,
                     summ_ball: int, last_appeal_to_rank: str, rank: str):
         request = f'''
 INSERT INTO users(mention, user_id, group_id, summ_ball, last_appeal_to_rank, rank)
-VALUES("{mention}", {user_id}, {group_id}, {summ_ball}, "{last_appeal_to_rank}", "{rank}");
+VALUES('{mention}', {user_id}, {group_id}, {summ_ball}, '{last_appeal_to_rank}', '{rank}');
 '''
         self.cursor.execute(request)
-        self.connect.commit()
+        try:
+            self.connect.commit()
+        except InFailedSqlTransaction:
+            self.connect.rollback()
 
     def update_group(self, group_id: int, timezone: str = None,
                      week_gondon: int = None):
@@ -77,10 +85,19 @@ VALUES("{mention}", {user_id}, {group_id}, {summ_ball}, "{last_appeal_to_rank}",
         if week_gondon is not None:
             variables.append(f'week_gondon={week_gondon}')
 
+        length_vars = len(variables)
+        if length_vars > 1:
+            for i in range(length_vars):
+                if i + 1 < length_vars:
+                    variables[i] += ','
+
         self.cursor.execute(
             request.format(id_group=group_id, variables=',\n'.join(variables))
         )
-        self.connect.commit()
+        try:
+            self.connect.commit()
+        except InFailedSqlTransaction:
+            self.connect.rollback()
 
     def update_user(self, user_id, group_id: int, mention: str = None,
                     summ_ball: int = None, last_appeal_to_rank: str = None,
@@ -97,21 +114,36 @@ VALUES("{mention}", {user_id}, {group_id}, {summ_ball}, "{last_appeal_to_rank}",
         if rank is not None:
             variables.append(f'rank="{rank}"')
 
+        length_vars = len(variables)
+        if length_vars > 1:
+            for i in range(length_vars):
+                if i + 1 < length_vars:
+                    variables[i] += ','
+
         self.cursor.execute(
             request.format(
                 user_id=user_id, group_id=group_id,
                 variables=',\n'.join(variables)
             )
         )
-        self.connect.commit()
+        try:
+            self.connect.commit()
+        except InFailedSqlTransaction:
+            self.connect.rollback()
 
     def update_stat_requests(self, date, requests):
         request = self.requests_update['stat_requests'].format(
             date=date, requests=requests
         )
         self.cursor.execute(request)
-        self.connect.commit()
+        try:
+            self.connect.commit()
+        except InFailedSqlTransaction:
+            self.connect.rollback()
 
     def post_request(self, request):
         self.cursor.execute(request)
-        self.connect.commit()
+        try:
+            self.connect.commit()
+        except InFailedSqlTransaction:
+            self.connect.rollback()
