@@ -26,7 +26,7 @@ class BaseDataRequests(BaseData):
             result = self.cursor.fetchone()
             return True if result is not None else False
         if count:
-            result = self.cursor.fetchone()
+            result = self.cursor.fetchall()
             return 0 if result is None else len(result)
 
         columns = self.tables[table] if select_str == '*' else select
@@ -144,6 +144,15 @@ VALUES('{mention}', {user_id}, {group_id}, {summ_ball}, '{last_appeal_to_rank}',
 
     def post_request(self, request):
         self.cursor.execute(request)
+        try:
+            self.connect.commit()
+        except InFailedSqlTransaction:
+            self.connect.rollback()
+
+    def delete(self, table: str, where: str):
+        request = f'DELETE FROM {table} WHERE {where}'
+        self.cursor.execute(request)
+
         try:
             self.connect.commit()
         except InFailedSqlTransaction:

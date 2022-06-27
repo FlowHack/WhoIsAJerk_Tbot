@@ -29,6 +29,7 @@ async def set_default_commands(dp):
             types.BotCommand('set_timezone', 'Настройка таймзоны'),
             types.BotCommand('join_game', 'Присоединиться к игре'),
             types.BotCommand('secret', 'Секрет... Лучше не нажимать'),
+            types.BotCommand('left_game', 'Покинуть игру'),
             types.BotCommand('help', 'Помощь'),
         ]
     )
@@ -40,12 +41,32 @@ async def new_members_handler(message: types.Message):
 
     if new_member.id == int(BOT_ID):
         await message.answer(
-            db_requests.get('frazes', ['text_fraze'], "action='secret'")
+            db_requests.get('frazes', ['text_fraze'], "action='start'"),
+            reply_markup=KEYBOARDS['start']
         )
         return
 
     await message.answer(
-        db_requests.get('frazes', ['text_fraze'], "action='new_member'")
+        db_requests.get(
+            'frazes', ['text_fraze'], "action='new_member'"
+        ).format(
+            id=new_member.id, mention=new_member.mention
+        )
+    )
+
+
+@dp.message_handler(content_types=[types.ContentType.LEFT_CHAT_MEMBER])
+async def left_members_handler(message: types.Message):
+    left_member = message.left_chat_member
+    group_id = message.chat.id
+
+    if left_member.id == int(BOT_ID):
+        db_requests.delete('groups', f'id_group={group_id}')
+        db_requests.delete('users', f'group_id={group_id}')
+        return
+
+    db_requests.delete(
+        'users', f'user_id={left_member.id} and group_id={group_id}'
     )
 
 
@@ -61,7 +82,7 @@ async def start(message: types.Message):
     )
 
     await message.answer(
-        text, reply_markup=KEYBOARDS['start'] if not exists else None
+        text, reply_markup=None if exists else KEYBOARDS['start']
     )
 
 
@@ -194,6 +215,19 @@ async def join_game_query(callback_query: types.CallbackQuery):
 @dp.message_handler(commands='join_game')
 async def join_game_command(message: types.Message):
     await join_game(message, message.from_user)
+
+
+@dp.message_handler(commands='left_game')
+async def left_game(message: types.Message):
+    user = message.from_user
+    group_id = message.chat.id
+
+    db_requests.delete('users', f'user_id={user.id} and group_id={group_id}')
+    await message.answer(
+        db_requests.get('frazes', ['text_fraze'], "action='left_game'").format(
+            id=user.id, mention=user.mention
+        )
+    )
 
 
 @dp.message_handler(commands='rank')

@@ -45,7 +45,6 @@ INSERT INTO frazes (action, text_fraze) VALUES
 ('left_game_again', '{DEFAULT_RESPONSES['left_game_again']}'),
 ('who_in_game', '{DEFAULT_RESPONSES['who_in_game']}'),
 ('new_member', '{DEFAULT_RESPONSES['new_member']}'),
-('left_member', '{DEFAULT_RESPONSES['left_member']}'),
 ('secret', '{DEFAULT_RESPONSES['secret']}'),
 ('bot_not_admin', '{DEFAULT_RESPONSES['bot_not_admin']}'),
 ('bot_not_admin_and_user_to', '{DEFAULT_RESPONSES['bot_not_admin_and_user_to']}'),
@@ -58,7 +57,8 @@ INSERT INTO frazes (action, text_fraze) VALUES
 ('help', '{DEFAULT_RESPONSES['help']}'),
 ('member_not_in_game', '{DEFAULT_RESPONSES['member_not_in_game']}'),
 ('rank', '{DEFAULT_RESPONSES['rank']}'),
-('ooops', '{DEFAULT_RESPONSES['ooops']}');
+('ooops', '{DEFAULT_RESPONSES['ooops']}'),
+('left_game', '{DEFAULT_RESPONSES['left_game']}');
 '''
 CREATE_RANKS = '''
 CREATE TABLE IF NOT EXISTS ranks(
